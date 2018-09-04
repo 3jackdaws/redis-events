@@ -1,0 +1,91 @@
+Metadata-Version: 1.1
+Name: redis-events
+Version: 0.0.1
+Summary: Event based distributed computing using Redis and asyncio
+Home-page: https://github.com/3jackdaws/redis-events
+Author: Ian Murphy
+Author-email: 3jackdaws@gmail.com
+License: MIT
+Description: # Redis Events
+        Event based distributed computing using Redis and asyncio
+        
+        
+        # Usage
+        Create a worker that will respond to events:
+        
+        ```py
+        # worker.py
+        
+        from redis_events import Client, Event
+        
+        # Point client at Redis server
+        client = Client(
+            host="mywebsite.com",
+            port=6379,
+            password="PASSWORD123"
+        )
+        
+        
+        @client.event("echo")  # name the event whatever you want
+        async def echo_example(event: Event):
+            reply_event = Event(
+                "echo", # this doesn't actually matter because it is a reply
+                event.data  # echo the data that was in the first event
+            )
+        
+            await client.send_reply(event, reply_event)
+        
+        client.run()
+        
+        ```
+        
+        
+        Create a script that will push events
+        
+        ```py
+        # send_events.py
+        
+        from redis_events import Client
+        import asyncio
+        
+        # obviously, must point to the same Redis server as the worker
+        client = Client(
+            host="mywebsite.com",
+            port=6379,
+            password="PASSWORD123"
+        )
+        
+        # Everything is async
+        async def send_events():
+            my_event = Event(
+                "echo",
+                {"test": 1234}
+            )
+        
+            await client.send(my_event)
+        
+            reply = await client.wait_for_reply(to=my_event, timeout=60)  # wait for a reply for up to 1 minute
+        
+            print("GOT REPLY")
+        
+        
+        asyncio.get_event_loop().run_until_complete(send_events())
+        
+        ```
+        
+        # Installation
+        
+        `pip install redis-events`
+        
+        
+        
+        
+        
+        
+        
+        
+        
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent

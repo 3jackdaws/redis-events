@@ -1,0 +1,8 @@
+setup.py
+redis_events/__init__.py
+redis_events/client.py
+redis_events.egg-info/PKG-INFO
+redis_events.egg-info/SOURCES.txt
+redis_events.egg-info/dependency_links.txt
+redis_events.egg-info/requires.txt
+redis_events.egg-info/top_level.txt
